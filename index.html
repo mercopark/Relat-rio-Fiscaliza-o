@@ -604,6 +604,18 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
 .btn-mini { flex: 1; padding: 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--accent); background: var(--accent-light); color: var(--accent-dark); font-weight: 700; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
 .btn-mini-danger { flex: 0 0 auto; border-color: rgba(192,57,43,.4); background: var(--danger-bg); color: var(--danger); }
 .aviso-fim { display: none; background: var(--orange-bg); border-color: rgba(212,116,14,.35); color: var(--fg); font-size: 14px; line-height: 1.5; opacity: 1; transform: none; animation: none; }
+.btn-zap { margin-top: 10px; background: #25D366; }
+.btn-zap:hover { background: #1ebe5b; }
+.historico { opacity: 1; transform: none; animation: none; margin-top: 14px; }
+.hist-item { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px; background: var(--input-bg); }
+.hist-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.hist-tit { font-weight: 700; font-size: 14px; }
+.hist-tipo { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--accent-light); color: var(--accent-dark); white-space: nowrap; }
+.hist-tipo.frente { background: #e8eef6; color: var(--primary); }
+.hist-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.hist-acoes { display: flex; gap: 8px; margin-top: 10px; }
+.hist-acoes button { flex: 1; padding: 9px; font-size: 13px; }
+.hist-vazio { font-size: 13px; color: var(--muted); text-align: center; padding: 8px 0; }
 .autosave { text-align: center; font-size: 11px; color: var(--muted); margin: 6px 0 12px; }
 .chips label.chip { display: inline-block; margin: 0; font-size: inherit; text-transform: none; letter-spacing: 0; color: inherit; font-weight: inherit; }
 .chips.col label.chip { display: block; }
@@ -676,36 +688,6 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
         </div>
         <p class="hint" style="margin:6px 0 0">Salva a mão de obra e os equipamentos (seções 3 e 4) com o nome do encarregado.</p>
       </div>
-
-      <label><span class="qnum">8.</span>Tempo (clima)<span class="req">*</span></label>
-      <div class="chips" id="tempo" data-req="8"></div>
-      <button type="button" class="btn-add" id="btnGps" onclick="tempoPorGps()" style="margin:-4px 0 6px">📍 Preencher tempo e pluviometria pelo GPS</button>
-      <p class="hint" id="gpsInfo" style="margin:0 0 14px"></p>
-
-      <label for="pluviometria"><span class="qnum">9.</span>Pluviometria (mm)</label>
-      <input type="number" id="pluviometria" inputmode="decimal" min="0" step="any" placeholder="0">
-
-      <label><span class="qnum">10.</span>Ocorreram acidentes?<span class="req">*</span></label>
-      <div class="chips" id="acidentes" data-req="10"></div>
-      <div class="cond" id="acidenteBox">
-        <label for="acidenteDesc"><span class="qnum">11.</span>Descrever o acidente</label>
-        <input type="text" id="acidenteDesc" autocomplete="off">
-      </div>
-
-      <label><span class="qnum">12.</span>Serviços desenvolvidos no período<span class="req">*</span></label>
-      <div class="chips col" id="servicos" data-req="12" data-outra="servicosOutra"></div>
-      <input type="text" id="servicosOutra" class="outra-input" placeholder="Outro serviço" autocomplete="off">
-
-      <details class="grupo" id="grpQuant">
-        <summary><span><span class="qnum">13–25.</span>Quantitativos do serviço</span><span class="badge" id="badgeQuant"></span></summary>
-        <div class="grupo-body"><div class="num-list" id="quantList"></div></div>
-      </details>
-
-      <label for="servico"><span class="qnum">26.</span>Descrição detalhada dos serviços realizados</label>
-      <textarea id="servico" rows="4" placeholder="Detalhe os serviços e descreva os que não estão nos campos acima..."></textarea>
-
-      <label for="situacoes"><span class="qnum">27.</span>Situações relevantes que impactaram o andamento</label>
-      <textarea id="situacoes" rows="3" placeholder="Retrabalho, equipe/equipamento parado, desmobilização, paralisação, interferências, atrasos, falta de material..."></textarea>
     </div>
 
     <!-- SEÇÃO 3 -->
@@ -745,6 +727,44 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
       </div>
       <label for="parados"><span class="qnum">93.</span>Equipamentos parados por falta de operador? Quantos? Quais?</label>
       <input type="text" id="parados" autocomplete="off">
+    </div>
+
+    <!-- SEÇÃO 2 (continuação) -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon icon-purple">🌦️</div>
+        <div><div class="sec-num">Seção 2 · continuação</div><h3>Tempo, acidentes e serviços</h3></div>
+      </div>
+
+      <label><span class="qnum">8.</span>Tempo (clima)<span class="req">*</span></label>
+      <div class="chips" id="tempo" data-req="8"></div>
+      <button type="button" class="btn-add" id="btnGps" onclick="tempoPorGps()" style="margin:-4px 0 6px">📍 Preencher tempo e pluviometria pelo GPS</button>
+      <p class="hint" id="gpsInfo" style="margin:0 0 14px"></p>
+
+      <label for="pluviometria"><span class="qnum">9.</span>Pluviometria (mm)</label>
+      <input type="number" id="pluviometria" inputmode="decimal" min="0" step="any" placeholder="0">
+
+      <label><span class="qnum">10.</span>Ocorreram acidentes?<span class="req">*</span></label>
+      <div class="chips" id="acidentes" data-req="10"></div>
+      <div class="cond" id="acidenteBox">
+        <label for="acidenteDesc"><span class="qnum">11.</span>Descrever o acidente</label>
+        <input type="text" id="acidenteDesc" autocomplete="off">
+      </div>
+
+      <label><span class="qnum">12.</span>Serviços desenvolvidos no período<span class="req">*</span></label>
+      <div class="chips col" id="servicos" data-req="12" data-outra="servicosOutra"></div>
+      <input type="text" id="servicosOutra" class="outra-input" placeholder="Outro serviço" autocomplete="off">
+
+      <details class="grupo" id="grpQuant">
+        <summary><span><span class="qnum">13–25.</span>Quantitativos do serviço</span><span class="badge" id="badgeQuant"></span></summary>
+        <div class="grupo-body"><div class="num-list" id="quantList"></div></div>
+      </details>
+
+      <label for="servico"><span class="qnum">26.</span>Descrição detalhada dos serviços realizados</label>
+      <textarea id="servico" rows="4" placeholder="Detalhe os serviços e descreva os que não estão nos campos acima..."></textarea>
+
+      <label for="situacoes"><span class="qnum">27.</span>Situações relevantes que impactaram o andamento</label>
+      <textarea id="situacoes" rows="3" placeholder="Retrabalho, equipe/equipamento parado, desmobilização, paralisação, interferências, atrasos, falta de material..."></textarea>
     </div>
 
     <!-- SEÇÃO 5 -->
@@ -804,7 +824,18 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
       <p class="resultado-sub" id="resultadoSub">Copie o texto abaixo e cole no WhatsApp</p>
       <pre id="textoRelatorio"></pre>
       <button class="btn-copy" id="btnCopy" onclick="copiarTexto()">📋 Copiar Texto</button>
+      <button class="btn-copy btn-zap" id="btnFotosZap" onclick="enviarFotosWhatsApp()">📸 Enviar fotos no WhatsApp</button>
+      <button class="btn-sec" id="btnSalvarRel" onclick="salvarRelatorio()" style="margin-top:10px">💾 Salvar relatório</button>
     </div>
+  </div>
+
+  <div class="card historico" id="historicoCard">
+    <div class="card-header">
+      <div class="card-header-icon icon-blue">🗂️</div>
+      <div><h3>Relatórios salvos</h3></div>
+    </div>
+    <input type="search" id="buscaHist" placeholder="Buscar por data, encarregado, obra..." autocomplete="off">
+    <div id="listaHist"></div>
   </div>
 </div>
 
@@ -1174,7 +1205,15 @@ function gerarRelatorio() {
   mostrarResultado(L.join('\n'), 'Registro Diário gerado', 'Copie e cole no WhatsApp. Os números seguem as perguntas do Forms.');
 }
 
-function mostrarResultado(texto, titulo, sub) {
+let relatorioAtual = null; // { tipo, texto }
+function mostrarResultado(texto, titulo, sub, tipo, doHistorico) {
+  relatorioAtual = { tipo: tipo || 'registro', texto };
+  $('btnSalvarRel').style.display = doHistorico ? 'none' : '';
+  $('btnSalvarRel').textContent = '💾 Salvar relatório';
+  $('btnSalvarRel').disabled = false;
+  const nFotos = qtdArquivos('fotosSinal') + qtdArquivos('fotosServ');
+  $('btnFotosZap').style.display = (!doHistorico && nFotos) ? '' : 'none';
+  $('btnFotosZap').textContent = `📸 Enviar ${nFotos} foto(s) no WhatsApp`;
   $('textoRelatorio').textContent = texto;
   $('resultadoTitulo').textContent = titulo;
   $('resultadoSub').textContent = sub;
@@ -1230,7 +1269,79 @@ function gerarRelatorioFrente() {
  ${equipTexto}
 🔨 *SERVIÇO:*
  ${servico}${fotosInfo}${obsTexto}`;
-  mostrarResultado(texto, 'Relatório da frente gerado', 'Copie o texto abaixo e cole no WhatsApp');
+  mostrarResultado(texto, 'Relatório da frente gerado', 'Copie o texto e cole no WhatsApp, ou envie as fotos com o texto pelo botão verde.', 'frente');
+}
+
+// ===== Enviar fotos no WhatsApp (menu de compartilhar do celular) =====
+function arquivosFotos() {
+  return [...Array.from($('fotosSinal').files).slice(0, MAX_ARQ), ...Array.from($('fotosServ').files).slice(0, MAX_ARQ)];
+}
+async function enviarFotosWhatsApp() {
+  const files = arquivosFotos();
+  if (!files.length) { showToast('Nenhuma foto selecionada na Seção 6'); return; }
+  const texto = $('textoRelatorio').textContent;
+  if (navigator.canShare && navigator.canShare({ files })) {
+    try {
+      await navigator.share({ files, text: texto });
+    } catch (e) {
+      if (e.name !== 'AbortError') showToast('Não foi possível compartilhar as fotos');
+    }
+  } else {
+    showToast('Este navegador não envia fotos direto. Abra o app pelo Chrome do celular.', 4000);
+  }
+}
+
+// ===== Relatórios salvos =====
+const CHAVE_HIST = 'rdo-relatorios-v1';
+function lerHist() { try { return JSON.parse(lsGet(CHAVE_HIST) || '[]') || []; } catch (e) { return []; } }
+function gravarHist(h) {
+  try { localStorage.setItem(CHAVE_HIST, JSON.stringify(h)); return true; }
+  catch (e) { showToast('Memória do app cheia. Exclua relatórios antigos.', 4000); return false; }
+}
+function salvarRelatorio() {
+  if (!relatorioAtual) return;
+  const h = lerHist();
+  h.unshift({
+    id: Date.now(),
+    tipo: relatorioAtual.tipo,
+    data: $('data').value,
+    obra: valorEscolha('obra'),
+    encarregado: $('encarregado').value.trim(),
+    texto: relatorioAtual.texto,
+    salvoEm: new Date().toISOString()
+  });
+  if (!gravarHist(h)) return;
+  $('btnSalvarRel').textContent = '✓ Relatório salvo';
+  $('btnSalvarRel').disabled = true;
+  renderHist();
+  showToast('Relatório salvo no aparelho');
+}
+function fmtData(iso) { if (!iso) return 'Sem data'; const [a, m, d] = iso.split('-'); return `${d}/${m}/${a}`; }
+function renderHist() {
+  const termo = ($('buscaHist').value || '').toLowerCase().trim();
+  const h = lerHist().filter(r => !termo || [fmtData(r.data), r.obra, r.encarregado, r.texto].join(' ').toLowerCase().includes(termo));
+  const lista = $('listaHist');
+  if (!h.length) { lista.innerHTML = `<div class="hist-vazio">${termo ? 'Nada encontrado.' : 'Nenhum relatório salvo ainda. Gere um relatório e toque em “Salvar relatório”.'}</div>`; return; }
+  lista.innerHTML = '';
+  h.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'hist-item';
+    const obraCurta = (r.obra || '').replace(/^BR-386 - /, '');
+    div.innerHTML = `<div class="hist-top"><span class="hist-tit"></span><span class="hist-tipo ${r.tipo === 'frente' ? 'frente' : ''}">${r.tipo === 'frente' ? 'Frente' : 'Registro Diário'}</span></div>
+      <div class="hist-sub"></div>
+      <div class="hist-acoes"><button type="button" class="btn-mini">Ver / copiar</button><button type="button" class="btn-mini btn-mini-danger">Excluir</button></div>`;
+    div.querySelector('.hist-tit').textContent = fmtData(r.data) + (r.encarregado ? ' · ' + r.encarregado : '');
+    div.querySelector('.hist-sub').textContent = obraCurta || ' ';
+    const [bVer, bExc] = div.querySelectorAll('button');
+    bVer.onclick = () => mostrarResultado(r.texto, (r.tipo === 'frente' ? 'Relatório da frente' : 'Registro Diário') + ' de ' + fmtData(r.data), 'Relatório salvo. Copie o texto abaixo.', r.tipo, true);
+    bExc.onclick = () => {
+      if (bExc.dataset.conf !== '1') { bExc.dataset.conf = '1'; bExc.textContent = 'Confirmar'; setTimeout(() => { bExc.dataset.conf = ''; bExc.textContent = 'Excluir'; }, 3000); return; }
+      gravarHist(lerHist().filter(x => x.id !== r.id));
+      renderHist();
+      showToast('Relatório excluído');
+    };
+    lista.appendChild(div);
+  });
 }
 
 // ===== Copiar =====
@@ -1291,6 +1402,8 @@ $('data').value = hojeISO(); // item 1: sempre a data do celular ao abrir
 atualizarListaEquipes();
 $('equipeSalva').addEventListener('change', e => { if (e.target.value) { carregarEquipe(e.target.value); e.target.value = ''; } });
 tempoAutomatico();
+renderHist();
+$('buscaHist').addEventListener('input', renderHist);
 atualizarCondicionais();
 calcularTotais();
 
