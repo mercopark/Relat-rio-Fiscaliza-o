@@ -603,6 +603,7 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
 .equipe-btns { display: flex; gap: 8px; }
 .btn-mini { flex: 1; padding: 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--accent); background: var(--accent-light); color: var(--accent-dark); font-weight: 700; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
 .btn-mini-danger { flex: 0 0 auto; border-color: rgba(192,57,43,.4); background: var(--danger-bg); color: var(--danger); }
+.aviso-fim { display: none; background: var(--orange-bg); border-color: rgba(212,116,14,.35); color: var(--fg); font-size: 14px; line-height: 1.5; opacity: 1; transform: none; animation: none; }
 .autosave { text-align: center; font-size: 11px; color: var(--muted); margin: 6px 0 12px; }
 .chips label.chip { display: inline-block; margin: 0; font-size: inherit; text-transform: none; letter-spacing: 0; color: inherit; font-weight: inherit; }
 .chips.col label.chip { display: block; }
@@ -645,6 +646,11 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
       <input type="text" id="ccrOutra" class="outra-input" placeholder="Outra resposta" autocomplete="off">
     </div>
 
+    <div class="card aviso-fim" id="avisoFim">
+      <strong>Formulário encerra no item 4.</strong> Com "Não" na fiscalização CCR, o Forms vai direto para Enviar. As seções 2 a 6 ficam ocultas e não entram no Registro Diário.
+    </div>
+
+    <div id="secoesAtividade">
     <!-- SEÇÃO 2 -->
     <div class="card">
       <div class="card-header">
@@ -781,6 +787,8 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
       <div id="fotosServPreview" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"></div>
     </div>
 
+    </div><!-- /secoesAtividade -->
+
     <div class="autosave" id="autosave">Rascunho salvo no aparelho automaticamente</div>
     <button type="button" class="btn-main" onclick="gerarRelatorio()">Gerar Registro Diário (Forms)</button>
     <button type="button" class="btn-main btn-frente" onclick="gerarRelatorioFrente()">Gerar Relatório da Frente (WhatsApp)</button>
@@ -871,7 +879,12 @@ function toggleOutra(el) {
   const marcado = el.tagName === 'SELECT' ? el.value === OUTRA : !!el.querySelector(`input[value="${OUTRA}"]:checked`);
   $(el.dataset.outra).classList.toggle('show', marcado);
 }
+// Item 4: as duas respostas "Não" encerram o Forms (vão direto para Enviar)
+function semAtividade() { return valorEscolha('ccr').startsWith('Não'); }
 function atualizarCondicionais() {
+  const fim = semAtividade();
+  $('secoesAtividade').style.display = fim ? 'none' : '';
+  $('avisoFim').style.display = fim ? 'block' : 'none';
   $('acidenteBox').classList.toggle('show', valorEscolha('acidentes') === 'Sim');
   $('ensaioBox').classList.toggle('show', valorEscolha('ensaio') === 'Sim');
 }
@@ -1071,10 +1084,11 @@ function validar() {
   const faltando = [];
   const marcar = (el, n) => { el.classList.add('invalid'); faltando.push(n); };
   if (!$('data').value) marcar($('data'), 1);
-  ['identificacao','empresa','ccr','obra','tempo','acidentes','ensaio'].forEach(id => {
+  const ids = semAtividade() ? ['identificacao','empresa','ccr'] : ['identificacao','empresa','ccr','obra','tempo','acidentes','ensaio'];
+  ids.forEach(id => {
     if (!valorEscolha(id)) marcar($(id), $(id).dataset.req);
   });
-  if (!valoresMulti('servicos').length) marcar($('servicos'), 12);
+  if (!semAtividade() && !valoresMulti('servicos').length) marcar($('servicos'), 12);
   if (faltando.length) {
     faltando.sort((a, b) => a - b);
     const primeiro = document.querySelector('.invalid');
@@ -1111,6 +1125,11 @@ function gerarRelatorio() {
   L.push(`2. Identificação: ${valorEscolha('identificacao')}`);
   L.push(`3. Empresa: ${valorEscolha('empresa')}`);
   L.push(`4. Fiscalização CCR: ${valorEscolha('ccr')}`, '');
+  if (semAtividade()) {
+    L.push('_Formulário encerrado no item 4 (sem atividades de obra)._');
+    mostrarResultado(L.join('\n'), 'Registro Diário gerado', 'Copie e cole no WhatsApp. No Forms, responda até o item 4 e toque em Enviar.');
+    return;
+  }
 
   L.push('*2. OBRA E SERVIÇOS*');
   if (v('os')) L.push(`5. OS: ${v('os')}`);
