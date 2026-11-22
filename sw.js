@@ -1,5 +1,5 @@
 // Cache simples para o app abrir sem internet no canteiro.
-const CACHE = 'rdo-v6';
+const CACHE = 'rdo-v7';
 const ARQUIVOS = ['./', 'index.html', 'manifest.json', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
