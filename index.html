@@ -597,6 +597,7 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
 .chips.invalid { border: 1.5px solid var(--danger); border-radius: var(--radius-sm); padding: 8px; background: var(--danger-bg); }
 .total-box.warn { background: var(--orange-bg); border-color: rgba(212,116,14,.3); }
 .file-count { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.btn-frente { background: linear-gradient(160deg, var(--primary-light) 0%, var(--primary) 100%); box-shadow: 0 4px 20px rgba(26,51,80,0.25); }
 .autosave { text-align: center; font-size: 11px; color: var(--muted); margin: 6px 0 12px; }
 .chips label.chip { display: inline-block; margin: 0; font-size: inherit; text-transform: none; letter-spacing: 0; color: inherit; font-weight: inherit; }
 .chips.col label.chip { display: block; }
@@ -765,7 +766,8 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
     </div>
 
     <div class="autosave" id="autosave">Rascunho salvo no aparelho automaticamente</div>
-    <button type="button" class="btn-main" onclick="gerarRelatorio()">Gerar Relatório para WhatsApp</button>
+    <button type="button" class="btn-main" onclick="gerarRelatorio()">Gerar Registro Diário (Forms)</button>
+    <button type="button" class="btn-main btn-frente" onclick="gerarRelatorioFrente()">Gerar Relatório da Frente (WhatsApp)</button>
     <button type="button" class="btn-sec" onclick="limparForm()">Limpar Formulário</button>
   </form>
 
@@ -773,9 +775,9 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
     <div class="resultado-card">
       <div class="resultado-header">
         <div class="resultado-check">✓</div>
-        <h3>Relatório Gerado</h3>
+        <h3 id="resultadoTitulo">Relatório Gerado</h3>
       </div>
-      <p class="resultado-sub">Copie o texto abaixo e cole no WhatsApp. Os números seguem as perguntas do Forms.</p>
+      <p class="resultado-sub" id="resultadoSub">Copie o texto abaixo e cole no WhatsApp</p>
       <pre id="textoRelatorio"></pre>
       <button class="btn-copy" id="btnCopy" onclick="copiarTexto()">📋 Copiar Texto</button>
     </div>
@@ -1044,13 +1046,66 @@ function gerarRelatorio() {
     if (fv) L.push(`97. Serviços: ${fv} arquivo(s)`);
   }
 
-  $('textoRelatorio').textContent = L.join('\n');
+  mostrarResultado(L.join('\n'), 'Registro Diário gerado', 'Copie e cole no WhatsApp. Os números seguem as perguntas do Forms.');
+}
+
+function mostrarResultado(texto, titulo, sub) {
+  $('textoRelatorio').textContent = texto;
+  $('resultadoTitulo').textContent = titulo;
+  $('resultadoSub').textContent = sub;
   const btnCopy = $('btnCopy');
   btnCopy.classList.remove('copied');
   btnCopy.innerHTML = '📋 Copiar Texto';
   const resultadoDiv = $('resultado');
   resultadoDiv.style.display = 'block';
   setTimeout(() => resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
+
+// ===== Relatório de acompanhamento da frente (formato antigo do WhatsApp) =====
+function linhasQtdNome(classe, itens) {
+  let t = '';
+  document.querySelectorAll('input.' + classe).forEach((el, i) => {
+    const q = parseInt(el.value) || 0;
+    if (q > 0) t += `${q} ${itens[i]}\n`;
+  });
+  return t;
+}
+function gerarRelatorioFrente() {
+  let dataFormatada = 'Não informada';
+  if ($('data').value) { const [a, m, d] = $('data').value.split('-'); dataFormatada = `${d}/${m}/${a}`; }
+  const fiscal = valorEscolha('identificacao') || 'Cristian Roger Sangalli';
+  const emp = valorEscolha('empresa');
+  const empresa = !emp || emp === 'Consórcio Construtor ViaSul' ? 'CCVS Consórcio Construtor Viasul' : emp;
+  const encarregado = $('encarregado').value.trim() || 'Não informado';
+  const servico = $('servico').value.trim() || 'Não informado';
+  const obs = $('situacoes').value.trim();
+
+  let colabTexto = linhasQtdNome('mao', MAO);
+  const frente = parseInt($('encFrente').value) || 0;
+  if (frente > 0) colabTexto += `${frente} Encarregado${frente > 1 ? 's' : ''} de frente\n`;
+  if (!colabTexto) colabTexto = 'Nenhum colaborador registrado\n';
+  let equipTexto = linhasQtdNome('eq', EQ);
+  if (!equipTexto) equipTexto = 'Nenhum equipamento registrado\n';
+
+  const nFotos = qtdArquivos('fotosSinal') + qtdArquivos('fotosServ');
+  const fotosInfo = nFotos ? `\n📸 *FOTOS:* ${nFotos} foto(s) anexada(s)` : '';
+  const obsTexto = obs ? `\n\n📝 *OBSERVAÇÕES:*\n${obs}` : '';
+
+  const texto = `📋 *RELATÓRIO DE FISCALIZAÇÃO*
+
+📅 *Data:* ${dataFormatada}
+👤 *Fiscal:* ${fiscal}
+🏢 *Empresa:* ${empresa}
+👥 *Equipe:* Drenagem segmentos C/B
+👨‍💼 *Encarregado:* ${encarregado}
+
+👷 *COLABORADORES* (${$('totalMao').textContent} total)
+ ${colabTexto}
+🔧 *EQUIPAMENTOS*
+ ${equipTexto}
+🔨 *SERVIÇO:*
+ ${servico}${fotosInfo}${obsTexto}`;
+  mostrarResultado(texto, 'Relatório da frente gerado', 'Copie o texto abaixo e cole no WhatsApp');
 }
 
 // ===== Copiar =====
