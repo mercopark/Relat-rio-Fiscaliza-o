@@ -5,9 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Relatório">
+<meta name="apple-mobile-web-app-title" content="Registro Diário">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Relatório de Fiscalização - Cristian Sangalli</title>
+<title>Registro Diário de Obra - Cristian Sangalli</title>
+<meta name="theme-color" content="#1a3350">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -551,6 +555,53 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   }
 }
 </style>
+<style>
+/* Registro Diário: complementos */
+.sec-num { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+.req { color: var(--danger); margin-left: 2px; }
+.qnum { color: #9aa5b4; font-weight: 700; margin-right: 3px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; }
+.chip span {
+  display: inline-block; padding: 10px 14px; border-radius: 999px; font-size: 14px; font-weight: 600;
+  background: var(--input-bg); border: 1.5px solid var(--border); color: var(--fg); cursor: pointer;
+  transition: all .15s; line-height: 1.25;
+}
+.chip input:checked + span { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); }
+.chip input:focus-visible + span { box-shadow: 0 0 0 3px rgba(13,124,95,.2); }
+.chips.col { flex-direction: column; }
+.chips.col .chip span { border-radius: var(--radius-sm); width: 100%; }
+.chips.col .chip { width: 100%; }
+details.grupo { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 14px; background: var(--input-bg); }
+details.grupo > summary { list-style: none; cursor: pointer; padding: 13px 14px; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+details.grupo > summary::-webkit-details-marker { display: none; }
+details.grupo > summary > span:first-child { flex: 1; }
+details.grupo > summary::after { content: '▾'; color: var(--muted); transition: transform .2s; }
+details.grupo[open] > summary::after { transform: rotate(180deg); }
+details.grupo .grupo-body { padding: 0 14px 14px; }
+.badge { background: var(--accent); color: #fff; border-radius: 999px; font-size: 11px; padding: 2px 8px; font-weight: 700; }
+.badge:empty { display: none; }
+.num-list { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.num-row { display: flex; align-items: center; gap: 10px; }
+.num-row label { flex: 1; margin: 0; font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--fg); font-weight: 600; }
+.num-row input { width: 92px; margin: 0; text-align: center; padding: 10px 8px; flex-shrink: 0; background: #fff; }
+.num-row.has-val label { color: var(--accent-dark); }
+.num-row.has-val input { border-color: var(--accent); }
+.hint { font-size: 12px; color: var(--muted); margin: -8px 0 14px; }
+.outra-input { display: none; }
+.outra-input.show { display: block; }
+.cond { display: none; }
+.cond.show { display: block; }
+.invalid { border-color: var(--danger) !important; background: var(--danger-bg) !important; }
+.chips.invalid { border: 1.5px solid var(--danger); border-radius: var(--radius-sm); padding: 8px; background: var(--danger-bg); }
+.total-box.warn { background: var(--orange-bg); border-color: rgba(212,116,14,.3); }
+.file-count { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.autosave { text-align: center; font-size: 11px; color: var(--muted); margin: 6px 0 12px; }
+.chips label.chip { display: inline-block; margin: 0; font-size: inherit; text-transform: none; letter-spacing: 0; color: inherit; font-weight: inherit; }
+.chips.col label.chip { display: block; }
+</style>
+
 </head>
 <body>
 
@@ -558,129 +609,162 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 
 <div class="header">
   <div class="header-icon">📋</div>
-  <h2>Relatório de Fiscalização</h2>
-  <p>Fiscal: Cristian Roger Sangalli</p>
+  <h2>Registro Diário de Obra</h2>
+  <p>Implantação Via Sul · mesma ordem do Forms</p>
 </div>
 
 <div class="container">
-  <form id="fiscalForm">
+  <form id="fiscalForm" novalidate>
 
+    <!-- SEÇÃO 1 -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon icon-blue">📅</div>
-        <h3>Informações Gerais</h3>
-      </div>
-      <label for="data">Data</label>
-      <input type="date" id="data">
-
-      <div class="info-box">
-        <span class="info-box-icon">👤</span>
-        <div class="info-box-content">
-          <div class="label">Fiscal</div>
-          <div class="value">Cristian Roger Sangalli</div>
-        </div>
-      </div>
-      <div class="info-box">
-        <span class="info-box-icon">🏢</span>
-        <div class="info-box-content">
-          <div class="label">Empresa</div>
-          <div class="value">CCVS Consórcio Construtor Viasul</div>
-        </div>
-      </div>
-      <div class="info-box">
-        <span class="info-box-icon">👥</span>
-        <div class="info-box-content">
-          <div class="label">Equipe</div>
-          <div class="value">Drenagem segmentos C/B</div>
-        </div>
+        <div><div class="sec-num">Seção 1</div><h3>Dados para identificação</h3></div>
       </div>
 
-      <label for="encarregado">Encarregado</label>
-      <input type="text" id="encarregado" placeholder="Nome do encarregado" autocomplete="off">
+      <label for="data"><span class="qnum">1.</span>Data<span class="req">*</span></label>
+      <input type="date" id="data" data-req="1">
+
+      <label for="identificacao"><span class="qnum">2.</span>Identificação<span class="req">*</span></label>
+      <select id="identificacao" data-req="2" data-outra="identificacaoOutra"></select>
+      <input type="text" id="identificacaoOutra" class="outra-input" placeholder="Outro nome" autocomplete="off">
+
+      <label for="empresa"><span class="qnum">3.</span>Empresa / Construtora<span class="req">*</span></label>
+      <select id="empresa" data-req="3" data-outra="empresaOutra"></select>
+      <input type="text" id="empresaOutra" class="outra-input" placeholder="Outra empresa" autocomplete="off">
+
+      <label><span class="qnum">4.</span>Teve fiscalização CCR<span class="req">*</span></label>
+      <div class="chips col" id="ccr" data-req="4" data-outra="ccrOutra"></div>
+      <input type="text" id="ccrOutra" class="outra-input" placeholder="Outra resposta" autocomplete="off">
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon icon-green">👷</div>
-        <h3>Colaboradores</h3>
-      </div>
-      <div class="grid-2">
-        <div>
-          <label for="auxiliares">Auxiliares</label>
-          <input type="number" id="auxiliares" min="0" placeholder="0" oninput="calcularTotal()">
-        </div>
-        <div>
-          <label for="carpinteiros">Carpinteiros</label>
-          <input type="number" id="carpinteiros" min="0" placeholder="0" oninput="calcularTotal()">
-        </div>
-        <div>
-          <label for="encarregados">Encarregados</label>
-          <input type="number" id="encarregados" min="0" placeholder="0" oninput="calcularTotal()">
-        </div>
-        <div>
-          <label for="operadores">Operadores</label>
-          <input type="number" id="operadores" min="0" placeholder="0" oninput="calcularTotal()">
-        </div>
-        <div>
-          <label for="pedreiros">Pedreiros</label>
-          <input type="number" id="pedreiros" min="0" placeholder="0" oninput="calcularTotal()">
-        </div>
-      </div>
-
-      <div id="outrosColabsContainer" style="margin-top: 10px;"></div>
-      <button type="button" class="btn-add" onclick="addOutroColab()">+ Outro Colaborador</button>
-
-      <div class="total-box" id="totalBox">
-        <span class="total-label">Total de colaboradores</span>
-        <span class="total-value" id="totalColab">0</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon icon-orange">🔧</div>
-        <h3>Equipamentos</h3>
-      </div>
-      <div id="equipamentosContainer">
-        <div class="row-flex">
-          <input type="number" class="qtd" min="1" placeholder="Qtd">
-          <input type="text" class="nome" placeholder="Equipamento (ex: Grupo Gerador)">
-          <button type="button" class="btn-remove" onclick="removerLinha(this)" aria-label="Remover equipamento">×</button>
-        </div>
-      </div>
-      <button type="button" class="btn-add btn-add-orange" onclick="addEquipamento()">+ Adicionar Equipamento</button>
-    </div>
-
+    <!-- SEÇÃO 2 -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon icon-purple">🔨</div>
-        <h3>Serviço Executado</h3>
+        <div><div class="sec-num">Seção 2</div><h3>Obra e serviços</h3></div>
       </div>
-      <textarea id="servico" rows="3" placeholder="Descreva o serviço realizado..."></textarea>
+
+      <label for="os"><span class="qnum">5.</span>Número ordem de serviço (OC / OS)</label>
+      <input type="text" id="os" autocomplete="off">
+
+      <label for="obra"><span class="qnum">6.</span>Obra de implantação<span class="req">*</span></label>
+      <select id="obra" data-req="6" data-outra="obraOutra"></select>
+      <input type="text" id="obraOutra" class="outra-input" placeholder="Outra obra" autocomplete="off">
+
+      <label for="encarregado"><span class="qnum">7.</span>Responsável / encarregado - contratada</label>
+      <input type="text" id="encarregado" placeholder="Nome do encarregado" autocomplete="off">
+
+      <label><span class="qnum">8.</span>Tempo (clima)<span class="req">*</span></label>
+      <div class="chips" id="tempo" data-req="8"></div>
+
+      <label for="pluviometria"><span class="qnum">9.</span>Pluviometria (mm)</label>
+      <input type="number" id="pluviometria" inputmode="decimal" min="0" step="any" placeholder="0">
+
+      <label><span class="qnum">10.</span>Ocorreram acidentes?<span class="req">*</span></label>
+      <div class="chips" id="acidentes" data-req="10"></div>
+      <div class="cond" id="acidenteBox">
+        <label for="acidenteDesc"><span class="qnum">11.</span>Descrever o acidente</label>
+        <input type="text" id="acidenteDesc" autocomplete="off">
+      </div>
+
+      <label><span class="qnum">12.</span>Serviços desenvolvidos no período<span class="req">*</span></label>
+      <div class="chips col" id="servicos" data-req="12" data-outra="servicosOutra"></div>
+      <input type="text" id="servicosOutra" class="outra-input" placeholder="Outro serviço" autocomplete="off">
+
+      <details class="grupo" id="grpQuant">
+        <summary><span><span class="qnum">13–25.</span>Quantitativos do serviço</span><span class="badge" id="badgeQuant"></span></summary>
+        <div class="grupo-body"><div class="num-list" id="quantList"></div></div>
+      </details>
+
+      <label for="servico"><span class="qnum">26.</span>Descrição detalhada dos serviços realizados</label>
+      <textarea id="servico" rows="4" placeholder="Detalhe os serviços e descreva os que não estão nos campos acima..."></textarea>
+
+      <label for="situacoes"><span class="qnum">27.</span>Situações relevantes que impactaram o andamento</label>
+      <textarea id="situacoes" rows="3" placeholder="Retrabalho, equipe/equipamento parado, desmobilização, paralisação, interferências, atrasos, falta de material..."></textarea>
     </div>
 
+    <!-- SEÇÃO 3 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon icon-green">👷</div>
+        <div><div class="sec-num">Seção 3</div><h3>Histograma de mão de obra</h3></div>
+      </div>
+      <details class="grupo" id="grpMao" open>
+        <summary><span><span class="qnum">28–55.</span>Funções</span><span class="badge" id="badgeMao"></span></summary>
+        <div class="grupo-body"><div class="num-list" id="maoList"></div></div>
+      </details>
+      <div class="num-row" id="rowFrente">
+        <label for="encFrente">Encarregado de frente <span style="color:var(--muted);font-weight:500">(sem campo no Forms)</span></label>
+        <input type="number" id="encFrente" min="0" inputmode="numeric" placeholder="0">
+      </div>
+      <div class="total-box" id="totalMaoBox">
+        <span class="total-label"><span class="qnum">56.</span>Efetivo total<span class="req">*</span></span>
+        <span class="total-value" id="totalMao">0</span>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 4 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon icon-orange">🚜</div>
+        <div><div class="sec-num">Seção 4</div><h3>Histograma de equipamentos</h3></div>
+      </div>
+      <p class="hint" style="margin-top:-6px">Inserir apenas a quantidade (1, 2, 3...)</p>
+      <details class="grupo" id="grpEq" open>
+        <summary><span><span class="qnum">57–91.</span>Equipamentos</span><span class="badge" id="badgeEq"></span></summary>
+        <div class="grupo-body"><div class="num-list" id="eqList"></div></div>
+      </details>
+      <div class="total-box" id="totalEqBox" style="margin-bottom:14px">
+        <span class="total-label"><span class="qnum">92.</span>Equipamentos totais<span class="req">*</span></span>
+        <span class="total-value" id="totalEq">0</span>
+      </div>
+      <label for="parados"><span class="qnum">93.</span>Equipamentos parados por falta de operador? Quantos? Quais?</label>
+      <input type="text" id="parados" autocomplete="off">
+    </div>
+
+    <!-- SEÇÃO 5 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon icon-blue">🧪</div>
+        <div><div class="sec-num">Seção 5</div><h3>Qualidade</h3></div>
+      </div>
+      <label><span class="qnum">94.</span>Foi realizado ensaio de qualidade?<span class="req">*</span></label>
+      <div class="chips" id="ensaio" data-req="94"></div>
+      <div class="cond" id="ensaioBox">
+        <label for="ensaioDesc"><span class="qnum">95.</span>Tipo de ensaio realizado e se foi aprovado</label>
+        <input type="text" id="ensaioDesc" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- SEÇÃO 6 -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon icon-pink">📸</div>
-        <h3>Fotos</h3>
+        <div><div class="sec-num">Seção 6</div><h3>Registros fotográficos</h3></div>
       </div>
+      <label><span class="qnum">96.</span>Fotos da sinalização na frente de trabalho</label>
       <div class="file-input-wrap">
-        <input type="file" id="fotos" accept="image/*" multiple>
+        <input type="file" id="fotosSinal" accept="image/*,video/*" multiple>
+        <div class="file-input-icon">🚧</div>
+        <div class="file-input-text">Toque para selecionar (até 10)</div>
+      </div>
+      <div class="file-count" id="fotosSinalCount"></div>
+      <div id="fotosSinalPreview" style="display:flex;gap:8px;margin:12px 0 16px;flex-wrap:wrap;"></div>
+
+      <label><span class="qnum">97.</span>Fotos dos serviços realizados</label>
+      <div class="file-input-wrap">
+        <input type="file" id="fotosServ" accept="image/*,video/*" multiple>
         <div class="file-input-icon">📷</div>
-        <div class="file-input-text">Toque para selecionar fotos</div>
+        <div class="file-input-text">Toque para selecionar (até 10)</div>
         <div class="file-input-hint">Timestamp Camera Free</div>
       </div>
-      <div id="fotosPreview" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;"></div>
+      <div class="file-count" id="fotosServCount"></div>
+      <div id="fotosServPreview" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"></div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon icon-blue">📝</div>
-        <h3>Observações</h3>
-      </div>
-      <textarea id="observacoes" rows="3" placeholder="Observações adicionais..."></textarea>
-    </div>
-
+    <div class="autosave" id="autosave">Rascunho salvo no aparelho automaticamente</div>
     <button type="button" class="btn-main" onclick="gerarRelatorio()">Gerar Relatório para WhatsApp</button>
     <button type="button" class="btn-sec" onclick="limparForm()">Limpar Formulário</button>
   </form>
@@ -691,7 +775,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
         <div class="resultado-check">✓</div>
         <h3>Relatório Gerado</h3>
       </div>
-      <p class="resultado-sub">Copie o texto abaixo e cole no WhatsApp</p>
+      <p class="resultado-sub">Copie o texto abaixo e cole no WhatsApp. Os números seguem as perguntas do Forms.</p>
       <pre id="textoRelatorio"></pre>
       <button class="btn-copy" id="btnCopy" onclick="copiarTexto()">📋 Copiar Texto</button>
     </div>
@@ -699,13 +783,167 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 </div>
 
 <script>
-// Data atual no fuso horário local
-const hoje = new Date();
-document.getElementById('data').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+// ===== Listas do Forms "REGISTRO DIÁRIO DE OBRA - IMPLANTAÇÃO VIA SUL" =====
+const OUTRA = 'Outra';
+const LISTAS = {
+  identificacao: ['Anderson Prestes Carvalho da Silva','Bruno Arnhold','Claudinei Rasche','Cristian Roger Sangalli','David Santos Santana','Darlon dal Bosco','Eduardo Coutinho da Silva','Francis Emanuel de Ramos','Helio Dellazari Junior','Ivan Borges de Souza','Joel dos Santos Carolino','Luis Andre Bassualdo da Silva','Luis Airton Ribeiro da Silva','Paulo Roberto Borges de Brito Junior', OUTRA],
+  empresa: ['Consórcio Construtor ViaSul','Civil Master','DDD','GS Service (Henock)','Hidrogeo','Lavoro','Nascenge','Porto Beton','Mercúrio','PVK','Souza Floriano','Seel Engenharia','Sinaway', OUTRA],
+  ccr: ['Sim','Não - Sem atividades','Não - Em treinamento/atividades na Sede', OUTRA],
+  obra: ['BR-386 - Duplicação do Segmento B (Tio Hugo/Soledade)','BR-386 - Duplicação do Segmento C (Soledade/Fontoura Xavier)','BR-386 - Duplicação do Segmento E (Marques de Souza/Lajeado)','BR-386 - Interconexão - km 435+500 (Nova Santa Rita)','BR-386 - Interconexão - km 434+800 (Nova Santa Rita)','BR-386 - Sinistro Demais Terraplenos - km 286+950','BR-386 - Sinistro Demais Terraplenos - km 287+300','BR-386 - Sinistro Demais Terraplenos - km 294+820','BR-386 - Sinistro Demais Terraplenos - km 300+150','BR-386 - Sinistro Demais Terraplenos - km 302+720','BR-386 - Sinistro Demais Terraplenos - km 303+360','BR-386 - Sinistro Demais Terraplenos - km 307+100','BR-386 - Sinistro Demais Terraplenos - km 307+360','BR-386 - Sinistro Demais Terraplenos - km 318+280','BR-386 - Sinistro Demais Terraplenos - km 318+480','BR-386 - Sinistro Contenções - km 286+950','BR-386 - Sinistro Contenções - km 296+300','BR-386 - Sinistro Contenções - km 296+400','BR-386 - Sinistro Contenções - km 303+500','BR-386 - Sinistro Contenções - km 308+750','BR-386 - Sinistro Contenções - km 333+000','BR-386 - Sinistro Contenções - km 333+940','BR-386 - Sinistro Contenções - km 335+100','BR-386 - Sinistro Contenções - km 335+600','BR-386 - Sinistro Contenções - km 340+700','BR-386 - Sinistro Contenções - km 372+500','BR-101 - Passarela - km 23+750','BR 101 - Interconexões - km 69+600', OUTRA],
+  tempo: ['Bom','Instável','Chuvoso','Impraticável'],
+  acidentes: ['Sim','Não'],
+  servicos: ['Drenagem Profunda (Tubular e Celular)','Drenagem Superficial (Canaletas, Sarjetas e Dissipadores)','Obra de Arte Especial (OAE)','Terraplanagem - Corte/Aterro','Pavimentação - BGMC, BGTC, MS, BGS, CBUQ','Sinalização - Horizontal, Vertical','Obras de Contenção','Serviços complementares - EPS, Paisagismo','Estabilização de talude','Cortina Atirantada','Demolição', OUTRA],
+  ensaio: ['Sim','Não']
+};
+const QUANT = [ // 13–25
+  ['aterro','Volume de aterro','m³'],['corte','Volume de corte','m³'],['rachao','Rachão CFT','ton'],['bgmc','BGMC','ton'],['bgtc','BGTC','ton'],['macadame','Macadame','ton'],['bgs','BGS','ton'],['cbuq','CBUQ','ton'],['pmq','PMQ','ton'],['concreto','Concreto','m³'],['sinalH','Sinalização horizontal','m'],['sinalV','Sinalização vertical','unid'],['defensa','Defensa metálica','m']
+];
+const MAO = ['Apontador','Administrativo de obra','Armadores','Auxiliar de obras','Auxiliar de laboratorista','Auxiliar de topografia','Carpinteiros','Encarregado geral','Engenheiro da obra','Engenheiro de qualidade','Engenheiro de segurança','Ferreiro','Greidista','Laboratorista','Mesista','Motorista','Montadores','Operador de máquinas','Pedreiros','Rasteleiros','Servente em geral','Soldadores','Spotter','Topógrafo','Técnico de qualidade','Técnico de edificação','Técnico de planejamento','Técnico de segurança no trabalho']; // 28–55
+const EQ = ['Bate estaca','Bob cat','Caminhão comboio','Caminhão basculante','Caminhão baú','Caminhão betoneira','Caminhão bomba','Caminhão carroceria','Caminhão espargidor','Caminhão toco','Caminhão de sinalização','Caminhão lança concreto','Caminhão munck','Caminhão pipa','Carreta prancha','Carros','Escavadeira','Extrusora','Fresadora','Grupo gerador','Guindaste','Mini escavadeira','Motosserra','Motoniveladora','Plataforma PTA','Perfuratriz de estaca','Retroescavadeira','Rolo compactador liso monolítico','Rolo compactador liso duplo tandem','Rolo de pneus','Rolo pé de carneiro','Trator agrícola','Trator de esteira','Van','Vibro acabadora']; // 57–91
 
-// Sistema de toast
+const PADROES = { identificacao: 'Cristian Roger Sangalli', empresa: 'Consórcio Construtor ViaSul', ccr: 'Sim', acidentes: 'Não', ensaio: 'Não' };
+const CHAVE_RASCUNHO = 'rdo-rascunho-v1';
+const CHAVE_OBRA = 'rdo-ultima-obra';
+const MAX_ARQ = 10;
+
+const $ = id => document.getElementById(id);
+const slug = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '_').toLowerCase();
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+// ===== Montagem dos campos =====
+function montarSelect(id) {
+  const sel = $(id);
+  sel.innerHTML = '<option value="">Selecione...</option>' + LISTAS[id].map(o => `<option>${o}</option>`).join('');
+  sel.addEventListener('change', () => toggleOutra(sel));
+}
+function montarChips(id, multi) {
+  const box = $(id);
+  const tipo = multi ? 'checkbox' : 'radio';
+  box.innerHTML = LISTAS[id].map((o, i) =>
+    `<label class="chip"><input type="${tipo}" name="${id}" value="${o}" id="${id}_${i}"><span>${o}</span></label>`).join('');
+  box.addEventListener('change', () => { toggleOutra(box); atualizarCondicionais(); box.classList.remove('invalid'); });
+}
+function montarNumeros(containerId, itens, prefixo, numInicial, onChange) {
+  $(containerId).innerHTML = itens.map((it, i) => {
+    const [id, nome, un] = Array.isArray(it) ? it : [slug(it), it, ''];
+    return `<div class="num-row"><label for="${prefixo}_${id}"><span class="qnum">${numInicial + i}.</span>${nome}${un ? ` (${un})` : ''}</label>
+      <input type="number" id="${prefixo}_${id}" class="${prefixo}" min="0" step="${un && un !== 'unid' ? 'any' : '1'}" inputmode="${un && un !== 'unid' ? 'decimal' : 'numeric'}" placeholder="0"></div>`;
+  }).join('');
+  $(containerId).addEventListener('input', e => {
+    if (e.target.matches('input')) e.target.parentElement.classList.toggle('has-val', parseFloat(e.target.value) > 0);
+    onChange();
+  });
+}
+
+function valorEscolha(id) {
+  const el = $(id);
+  let v;
+  if (el.tagName === 'SELECT') v = el.value;
+  else v = (el.querySelector('input:checked') || {}).value || '';
+  if (v === OUTRA && el.dataset.outra) v = $(el.dataset.outra).value.trim();
+  return v;
+}
+function valoresMulti(id) {
+  return Array.from($(id).querySelectorAll('input:checked')).map(i => i.value === OUTRA ? $('servicosOutra').value.trim() : i.value).filter(Boolean);
+}
+function toggleOutra(el) {
+  if (!el.dataset.outra) return;
+  const marcado = el.tagName === 'SELECT' ? el.value === OUTRA : !!el.querySelector(`input[value="${OUTRA}"]:checked`);
+  $(el.dataset.outra).classList.toggle('show', marcado);
+}
+function atualizarCondicionais() {
+  $('acidenteBox').classList.toggle('show', valorEscolha('acidentes') === 'Sim');
+  $('ensaioBox').classList.toggle('show', valorEscolha('ensaio') === 'Sim');
+}
+function setEscolha(id, valor) {
+  const el = $(id);
+  if (el.tagName === 'SELECT') el.value = valor;
+  else el.querySelectorAll('input').forEach(i => { i.checked = Array.isArray(valor) ? valor.includes(i.value) : i.value === valor; });
+  toggleOutra(el);
+}
+
+// ===== Totais =====
+function somar(classe) {
+  let t = 0;
+  document.querySelectorAll('input.' + classe).forEach(el => { t += parseInt(el.value) || 0; });
+  return t;
+}
+function pulse(box) { box.classList.remove('pulse'); box.offsetHeight; box.classList.add('pulse'); }
+function contarPreenchidos(classe) {
+  return Array.from(document.querySelectorAll('input.' + classe)).filter(el => parseFloat(el.value) > 0).length;
+}
+function calcularTotais() {
+  const tm = somar('mao') + (parseInt($('encFrente').value) || 0);
+  const te = somar('eq');
+  if ($('totalMao').textContent !== String(tm)) { $('totalMao').textContent = tm; pulse($('totalMaoBox')); }
+  if ($('totalEq').textContent !== String(te)) { $('totalEq').textContent = te; pulse($('totalEqBox')); }
+  const nm = contarPreenchidos('mao'), ne = contarPreenchidos('eq'), nq = contarPreenchidos('qt');
+  $('badgeMao').textContent = nm ? nm : '';
+  $('badgeEq').textContent = ne ? ne : '';
+  $('badgeQuant').textContent = nq ? nq : '';
+}
+
+// ===== Fotos =====
+function configurarFotos(inputId) {
+  const input = $(inputId);
+  input.addEventListener('change', () => {
+    let files = Array.from(input.files);
+    if (files.length > MAX_ARQ) {
+      showToast(`O Forms aceita até ${MAX_ARQ} arquivos; só os ${MAX_ARQ} primeiros serão considerados`, 3500);
+      files = files.slice(0, MAX_ARQ);
+    }
+    const preview = $(inputId + 'Preview');
+    preview.innerHTML = '';
+    files.forEach((file, i) => {
+      if (!file.type.startsWith('image/')) return;
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.className = 'preview-img';
+      img.style.animationDelay = `${i * 0.05}s`;
+      preview.appendChild(img);
+    });
+    $(inputId + 'Count').textContent = files.length ? `${files.length} arquivo(s) selecionado(s)` : '';
+  });
+}
+function qtdArquivos(inputId) { return Math.min($(inputId).files.length, MAX_ARQ); }
+
+// ===== Rascunho =====
+const CAMPOS_TEXTO = ['data','identificacaoOutra','empresaOutra','ccrOutra','os','obraOutra','encarregado','pluviometria','acidenteDesc','servicosOutra','servico','situacoes','encFrente','parados','ensaioDesc'];
+function salvarRascunho() {
+  const d = { esc: {}, txt: {}, num: {} };
+  ['identificacao','empresa','obra'].forEach(id => d.esc[id] = $(id).value);
+  ['ccr','tempo','acidentes','ensaio'].forEach(id => d.esc[id] = ($(id).querySelector('input:checked') || {}).value || '');
+  d.esc.servicos = Array.from($('servicos').querySelectorAll('input:checked')).map(i => i.value);
+  CAMPOS_TEXTO.forEach(id => d.txt[id] = $(id).value);
+  document.querySelectorAll('input.mao, input.eq, input.qt').forEach(el => { if (el.value) d.num[el.id] = el.value; });
+  lsSet(CHAVE_RASCUNHO, JSON.stringify(d));
+  if ($('obra').value) lsSet(CHAVE_OBRA, $('obra').value);
+}
+function carregarRascunho() {
+  let d;
+  try { d = JSON.parse(lsGet(CHAVE_RASCUNHO) || 'null'); } catch (e) { d = null; }
+  if (!d) return false;
+  Object.entries(d.esc || {}).forEach(([id, v]) => setEscolha(id, v));
+  Object.entries(d.txt || {}).forEach(([id, v]) => { if ($(id)) $(id).value = v; });
+  Object.entries(d.num || {}).forEach(([id, v]) => { const el = $(id); if (el) { el.value = v; el.parentElement.classList.toggle('has-val', parseFloat(v) > 0); } });
+  return true;
+}
+function hojeISO() {
+  const h = new Date();
+  return `${h.getFullYear()}-${String(h.getMonth() + 1).padStart(2, '0')}-${String(h.getDate()).padStart(2, '0')}`;
+}
+function aplicarPadroes() {
+  $('data').value = hojeISO();
+  Object.entries(PADROES).forEach(([id, v]) => setEscolha(id, v));
+  const ultima = lsGet(CHAVE_OBRA);
+  if (ultima && LISTAS.obra.includes(ultima)) setEscolha('obra', ultima);
+}
+
+// ===== Toast =====
 function showToast(mensagem, duracao = 2500) {
-  const container = document.getElementById('toastContainer');
+  const container = $('toastContainer');
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = mensagem;
@@ -719,228 +957,167 @@ function showToast(mensagem, duracao = 2500) {
   }, duracao);
 }
 
-// Calcular total de colaboradores com animação de pulse
-function calcularTotal() {
-  let total = 0;
-  ['auxiliares','carpinteiros','encarregados','operadores','pedreiros'].forEach(id => {
-    total += parseInt(document.getElementById(id).value) || 0;
+// ===== Validação =====
+function validar() {
+  document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  const faltando = [];
+  const marcar = (el, n) => { el.classList.add('invalid'); faltando.push(n); };
+  if (!$('data').value) marcar($('data'), 1);
+  ['identificacao','empresa','ccr','obra','tempo','acidentes','ensaio'].forEach(id => {
+    if (!valorEscolha(id)) marcar($(id), $(id).dataset.req);
   });
-  document.querySelectorAll('.outro-colab-qtd').forEach(el => {
-    total += parseInt(el.value) || 0;
-  });
-  const totalEl = document.getElementById('totalColab');
-  const totalBox = document.getElementById('totalBox');
-  const anterior = parseInt(totalEl.textContent);
-  totalEl.textContent = total;
-  if (anterior !== total) {
-    totalBox.classList.remove('pulse');
-    totalBox.offsetHeight;
-    totalBox.classList.add('pulse');
+  if (!valoresMulti('servicos').length) marcar($('servicos'), 12);
+  if (faltando.length) {
+    faltando.sort((a, b) => a - b);
+    const primeiro = document.querySelector('.invalid');
+    primeiro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast(`Falta responder: ${faltando.join(', ')}`, 3500);
+    return false;
   }
+  return true;
 }
 
-// Adicionar outro colaborador
-function addOutroColab() {
-  const container = document.getElementById('outrosColabsContainer');
-  const div = document.createElement('div');
-  div.className = 'row-flex';
-  div.innerHTML = `
-    <input type="number" class="qtd outro-colab-qtd" min="0" placeholder="Qtd" oninput="calcularTotal()">
-    <input type="text" class="nome" placeholder="Outra função" autocomplete="off">
-    <button type="button" class="btn-remove" onclick="removerLinha(this); calcularTotal();" aria-label="Remover colaborador">×</button>
-  `;
-  container.appendChild(div);
-  div.querySelector('.nome').focus();
-}
-
-// Adicionar equipamento
-function addEquipamento() {
-  const container = document.getElementById('equipamentosContainer');
-  const div = document.createElement('div');
-  div.className = 'row-flex';
-  div.innerHTML = `
-    <input type="number" class="qtd" min="1" placeholder="Qtd">
-    <input type="text" class="nome" placeholder="Equipamento" autocomplete="off">
-    <button type="button" class="btn-remove" onclick="removerLinha(this)" aria-label="Remover equipamento">×</button>
-  `;
-  container.appendChild(div);
-  div.querySelector('.nome').focus();
-}
-
-// Remover linha com animação
-function removerLinha(btn) {
-  const row = btn.parentElement;
-  row.style.transition = 'opacity 0.2s, transform 0.2s';
-  row.style.opacity = '0';
-  row.style.transform = 'translateX(-16px)';
-  setTimeout(() => row.remove(), 200);
-}
-
-// Preview de fotos
-document.getElementById('fotos').addEventListener('change', function(e) {
-  const preview = document.getElementById('fotosPreview');
-  preview.innerHTML = '';
-  Array.from(e.target.files).forEach((file, i) => {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const img = document.createElement('img');
-      img.src = ev.target.result;
-      img.className = 'preview-img';
-      img.style.animationDelay = `${i * 0.05}s`;
-      preview.appendChild(img);
-    };
-    reader.readAsDataURL(file);
+// ===== Relatório =====
+function fmtNum(v) { return String(v).replace('.', ','); }
+function listaNumeros(classe, itens, numInicial) {
+  let t = '';
+  document.querySelectorAll('input.' + classe).forEach((el, i) => {
+    const v = parseFloat(el.value);
+    if (v > 0) {
+      const it = itens[i];
+      const nome = Array.isArray(it) ? it[1] : it;
+      const un = Array.isArray(it) ? ` ${it[2]}` : '';
+      t += `${numInicial + i}. ${nome}: ${fmtNum(el.value)}${un}\n`;
+    }
   });
-  if (e.target.files.length > 0) {
-    showToast(`${e.target.files.length} foto(s) selecionada(s)`);
-  }
-});
-
-// Gerar relatório
+  return t;
+}
 function gerarRelatorio() {
-  const dataInput = document.getElementById('data').value;
-  let dataFormatada = 'Não informada';
-  if (dataInput) {
-    const [a, m, d] = dataInput.split('-');
-    dataFormatada = `${d}/${m}/${a}`;
+  if (!validar()) return;
+  const [a, m, d] = $('data').value.split('-');
+  const v = id => $(id).value.trim();
+  const L = [];
+  L.push('📋 *REGISTRO DIÁRIO DE OBRA - IMPLANTAÇÃO VIA SUL*', '');
+  L.push('*1. IDENTIFICAÇÃO*');
+  L.push(`1. Data: ${d}/${m}/${a}`);
+  L.push(`2. Identificação: ${valorEscolha('identificacao')}`);
+  L.push(`3. Empresa: ${valorEscolha('empresa')}`);
+  L.push(`4. Fiscalização CCR: ${valorEscolha('ccr')}`, '');
+
+  L.push('*2. OBRA E SERVIÇOS*');
+  if (v('os')) L.push(`5. OS: ${v('os')}`);
+  L.push(`6. Obra: ${valorEscolha('obra')}`);
+  if (v('encarregado')) L.push(`7. Encarregado: ${v('encarregado')}`);
+  L.push(`8. Tempo: ${valorEscolha('tempo')}`);
+  if (v('pluviometria') !== '') L.push(`9. Pluviometria: ${fmtNum(v('pluviometria'))} mm`);
+  L.push(`10. Acidentes: ${valorEscolha('acidentes')}`);
+  if (valorEscolha('acidentes') === 'Sim' && v('acidenteDesc')) L.push(`11. Acidente: ${v('acidenteDesc')}`);
+  L.push('12. Serviços:');
+  valoresMulti('servicos').forEach(s => L.push(`• ${s}`));
+  const quant = listaNumeros('qt', QUANT, 13);
+  if (quant) L.push('', '*Quantitativos*', quant.trimEnd());
+  if (v('servico')) L.push('', '26. Descrição detalhada:', v('servico'));
+  if (v('situacoes')) L.push('', '27. Situações relevantes:', v('situacoes'));
+  L.push('');
+
+  L.push(`👷 *3. MÃO DE OBRA* (56. Efetivo total: ${$('totalMao').textContent})`);
+  const mao = listaNumeros('mao', MAO, 28);
+  L.push(mao ? mao.trimEnd() : 'Nenhum colaborador registrado');
+  const frente = parseInt($('encFrente').value) || 0;
+  if (frente > 0) L.push(`Encarregado de frente: ${frente} (sem campo no Forms)`);
+  L.push('');
+
+  L.push(`🚜 *4. EQUIPAMENTOS* (92. Total: ${$('totalEq').textContent})`);
+  const eq = listaNumeros('eq', EQ, 57);
+  L.push(eq ? eq.trimEnd() : 'Nenhum equipamento registrado');
+  if (v('parados')) L.push(`93. Parados por falta de operador: ${v('parados')}`);
+  L.push('');
+
+  L.push('🧪 *5. QUALIDADE*');
+  L.push(`94. Ensaio de qualidade: ${valorEscolha('ensaio')}`);
+  if (valorEscolha('ensaio') === 'Sim' && v('ensaioDesc')) L.push(`95. Ensaio: ${v('ensaioDesc')}`);
+
+  const fs = qtdArquivos('fotosSinal'), fv = qtdArquivos('fotosServ');
+  if (fs || fv) {
+    L.push('', '📸 *6. FOTOS*');
+    if (fs) L.push(`96. Sinalização: ${fs} arquivo(s)`);
+    if (fv) L.push(`97. Serviços: ${fv} arquivo(s)`);
   }
 
-  const encarregado = document.getElementById('encarregado').value || 'Não informado';
-  const servico = document.getElementById('servico').value || 'Não informado';
-  const observacoes = document.getElementById('observacoes').value || '';
-
-  let colabTexto = '';
-  const funcoes = {
-    'auxiliares': 'Auxiliar de Obras',
-    'carpinteiros': 'Carpinteiro',
-    'encarregados': 'Encarregado de frente',
-    'operadores': 'Operador',
-    'pedreiros': 'Pedreiro'
-  };
-
-  for (let [id, nome] of Object.entries(funcoes)) {
-    const qtd = document.getElementById(id).value;
-    if (qtd && parseInt(qtd) > 0) {
-      colabTexto += `${qtd} ${nome}${parseInt(qtd) > 1 ? 's' : ''}\n`;
-    }
-  }
-
-  document.querySelectorAll('#outrosColabsContainer .row-flex').forEach(row => {
-    const qtd = row.querySelector('.outro-colab-qtd').value;
-    const funcao = row.querySelector('.nome').value;
-    if (qtd && parseInt(qtd) > 0 && funcao) {
-      colabTexto += `${qtd} ${funcao}\n`;
-    }
-  });
-  if (!colabTexto) colabTexto = 'Nenhum colaborador registrado\n';
-
-  let equipTexto = '';
-  document.querySelectorAll('#equipamentosContainer .row-flex').forEach(row => {
-    const qtd = row.querySelector('.qtd').value;
-    const nome = row.querySelector('.nome').value;
-    if (qtd && parseInt(qtd) > 0 && nome) {
-      equipTexto += `${qtd} ${nome}\n`;
-    }
-  });
-  if (!equipTexto) equipTexto = 'Nenhum equipamento registrado\n';
-
-  const total = document.getElementById('totalColab').textContent;
-  const fotosInput = document.getElementById('fotos');
-  let fotosInfo = '';
-  if (fotosInput.files.length > 0) {
-    fotosInfo = `\n📸 *FOTOS:* ${fotosInput.files.length} foto(s) anexada(s)`;
-  }
-  const obsTexto = observacoes ? `\n\n📝 *OBSERVAÇÕES:*\n${observacoes}` : '';
-
-  const texto = `📋 *RELATÓRIO DE FISCALIZAÇÃO*
-
-📅 *Data:* ${dataFormatada}
-👤 *Fiscal:* Cristian Roger Sangalli
-🏢 *Empresa:* CCVS Consórcio Construtor Viasul
-👥 *Equipe:* Drenagem segmentos C/B
-👨‍💼 *Encarregado:* ${encarregado}
-
-👷 *COLABORADORES* (${total} total)
- ${colabTexto}
-🔧 *EQUIPAMENTOS*
- ${equipTexto}
-🔨 *SERVIÇO:*
- ${servico}${fotosInfo}${obsTexto}`;
-
-  document.getElementById('textoRelatorio').textContent = texto;
-
-  const btnCopy = document.getElementById('btnCopy');
+  $('textoRelatorio').textContent = L.join('\n');
+  const btnCopy = $('btnCopy');
   btnCopy.classList.remove('copied');
   btnCopy.innerHTML = '📋 Copiar Texto';
-
-  const resultadoDiv = document.getElementById('resultado');
+  const resultadoDiv = $('resultado');
   resultadoDiv.style.display = 'block';
-  setTimeout(() => {
-    resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
+  setTimeout(() => resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
-// Copiar texto
+// ===== Copiar =====
 function copiarTexto() {
-  const texto = document.getElementById('textoRelatorio').textContent;
-  const btnCopy = document.getElementById('btnCopy');
-
+  const texto = $('textoRelatorio').textContent;
+  const btnCopy = $('btnCopy');
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(texto).then(() => {
-      copiadoSucesso(btnCopy);
-    }).catch(() => {
-      fallbackCopiar(btnCopy);
-    });
+    navigator.clipboard.writeText(texto).then(() => copiadoSucesso(btnCopy)).catch(() => fallbackCopiar(btnCopy));
   } else {
     fallbackCopiar(btnCopy);
   }
 }
-
 function fallbackCopiar(btnCopy) {
   const range = document.createRange();
-  range.selectNode(document.getElementById('textoRelatorio'));
+  range.selectNode($('textoRelatorio'));
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
-  try {
-    document.execCommand('copy');
-    copiadoSucesso(btnCopy);
-  } catch (err) {
-    showToast('Erro ao copiar. Selecione manualmente.');
-  }
+  try { document.execCommand('copy'); copiadoSucesso(btnCopy); }
+  catch (err) { showToast('Erro ao copiar. Selecione manualmente.'); }
   window.getSelection().removeAllRanges();
 }
-
 function copiadoSucesso(btnCopy) {
   btnCopy.classList.add('copied');
   btnCopy.innerHTML = '✓ Copiado!';
   showToast('Relatório copiado com sucesso!');
-  setTimeout(() => {
-    btnCopy.classList.remove('copied');
-    btnCopy.innerHTML = '📋 Copiar Texto';
-  }, 2500);
+  setTimeout(() => { btnCopy.classList.remove('copied'); btnCopy.innerHTML = '📋 Copiar Texto'; }, 2500);
 }
 
-// Limpar formulário
+// ===== Limpar =====
 function limparForm() {
-  document.getElementById('fiscalForm').reset();
-
-  const hoje = new Date();
-  document.getElementById('data').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
-
-  document.getElementById('totalColab').textContent = '0';
-  document.getElementById('outrosColabsContainer').innerHTML = '';
-  document.getElementById('equipamentosContainer').innerHTML = `
-    <div class="row-flex">
-      <input type="number" class="qtd" min="1" placeholder="Qtd">
-      <input type="text" class="nome" placeholder="Equipamento (ex: Grupo Gerador)">
-      <button type="button" class="btn-remove" onclick="removerLinha(this)" aria-label="Remover equipamento">×</button>
-    </div>
-  `;
-  document.getElementById('fotosPreview').innerHTML = '';
-  document.getElementById('resultado').style.display = 'none';
-
+  $('fiscalForm').reset();
+  lsDel(CHAVE_RASCUNHO);
+  document.querySelectorAll('.has-val').forEach(el => el.classList.remove('has-val'));
+  document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  document.querySelectorAll('.outra-input').forEach(el => el.classList.remove('show'));
+  ['fotosSinal','fotosServ'].forEach(id => { $(id + 'Preview').innerHTML = ''; $(id + 'Count').textContent = ''; });
+  aplicarPadroes();
+  atualizarCondicionais();
+  calcularTotais();
+  $('resultado').style.display = 'none';
   showToast('Formulário limpo');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== Início =====
+['identificacao','empresa','obra'].forEach(montarSelect);
+montarChips('ccr'); montarChips('tempo'); montarChips('acidentes'); montarChips('ensaio');
+montarChips('servicos', true);
+montarNumeros('quantList', QUANT, 'qt', 13, calcularTotais);
+montarNumeros('maoList', MAO, 'mao', 28, calcularTotais);
+montarNumeros('eqList', EQ, 'eq', 57, calcularTotais);
+$('encFrente').addEventListener('input', calcularTotais);
+configurarFotos('fotosSinal');
+configurarFotos('fotosServ');
+
+if (!carregarRascunho()) aplicarPadroes();
+if (!$('data').value) $('data').value = hojeISO();
+atualizarCondicionais();
+calcularTotais();
+
+let timerSalvar;
+$('fiscalForm').addEventListener('input', () => { clearTimeout(timerSalvar); timerSalvar = setTimeout(salvarRascunho, 400); });
+$('fiscalForm').addEventListener('change', () => { clearTimeout(timerSalvar); timerSalvar = setTimeout(salvarRascunho, 400); });
+document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', () => el.classList.remove('invalid')));
+
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 </script>
 </body>
