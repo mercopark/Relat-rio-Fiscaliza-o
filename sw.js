@@ -1,5 +1,5 @@
 // Cache simples para o app abrir sem internet no canteiro.
-const CACHE = 'rdo-v2';
+const CACHE = 'rdo-v3';
 const ARQUIVOS = ['./', 'index.html', 'manifest.json', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -11,6 +11,7 @@ self.addEventListener('activate', e => {
 // Rede primeiro (pega versão nova quando há sinal), cache se estiver offline.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (new URL(e.request.url).origin !== location.origin) return; // API do tempo e fontes: direto pela rede
   e.respondWith(
     fetch(e.request).then(r => {
       if (r.ok && new URL(e.request.url).origin === location.origin) {
