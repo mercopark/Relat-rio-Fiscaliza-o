@@ -824,7 +824,8 @@ details.grupo .grupo-body { padding: 0 14px 14px; }
       <p class="resultado-sub" id="resultadoSub">Copie o texto abaixo e cole no WhatsApp</p>
       <pre id="textoRelatorio"></pre>
       <button class="btn-copy" id="btnCopy" onclick="copiarTexto()">📋 Copiar Texto</button>
-      <button class="btn-copy btn-zap" id="btnFotosZap" onclick="enviarFotosWhatsApp()">📸 Enviar fotos no WhatsApp</button>
+      <button class="btn-copy btn-zap" id="btnTextoZap" onclick="enviarTextoWhatsApp()">💬 1. Enviar texto no WhatsApp</button>
+      <button class="btn-copy btn-zap" id="btnFotosZap" onclick="enviarFotosWhatsApp()">📸 2. Enviar fotos no WhatsApp</button>
       <button class="btn-sec" id="btnSalvarRel" onclick="salvarRelatorio()" style="margin-top:10px">💾 Salvar relatório</button>
     </div>
   </div>
@@ -1213,7 +1214,8 @@ function mostrarResultado(texto, titulo, sub, tipo, doHistorico) {
   $('btnSalvarRel').disabled = false;
   const nFotos = qtdArquivos('fotosSinal') + qtdArquivos('fotosServ');
   $('btnFotosZap').style.display = (!doHistorico && nFotos) ? '' : 'none';
-  $('btnFotosZap').textContent = `📸 Enviar ${nFotos} foto(s) no WhatsApp`;
+  $('btnFotosZap').textContent = `📸 2. Enviar ${nFotos} foto(s) no WhatsApp`;
+  $('btnTextoZap').textContent = nFotos ? '💬 1. Enviar texto no WhatsApp' : '💬 Enviar texto no WhatsApp';
   $('textoRelatorio').textContent = texto;
   $('resultadoTitulo').textContent = titulo;
   $('resultadoSub').textContent = sub;
@@ -1269,7 +1271,7 @@ function gerarRelatorioFrente() {
  ${equipTexto}
 🔨 *SERVIÇO:*
  ${servico}${fotosInfo}${obsTexto}`;
-  mostrarResultado(texto, 'Relatório da frente gerado', 'Copie o texto e cole no WhatsApp, ou envie as fotos com o texto pelo botão verde.', 'frente');
+  mostrarResultado(texto, 'Relatório da frente gerado', 'Envie primeiro o texto e depois as fotos, no mesmo grupo.', 'frente');
 }
 
 // ===== Enviar fotos no WhatsApp (menu de compartilhar do celular) =====
@@ -1279,16 +1281,25 @@ function arquivosFotos() {
 async function enviarFotosWhatsApp() {
   const files = arquivosFotos();
   if (!files.length) { showToast('Nenhuma foto selecionada na Seção 6'); return; }
-  const texto = $('textoRelatorio').textContent;
+  // Só as fotos, sem texto: o WhatsApp repete o texto como legenda em cada foto.
   if (navigator.canShare && navigator.canShare({ files })) {
     try {
-      await navigator.share({ files, text: texto });
+      await navigator.share({ files });
     } catch (e) {
       if (e.name !== 'AbortError') showToast('Não foi possível compartilhar as fotos');
     }
   } else {
     showToast('Este navegador não envia fotos direto. Abra o app pelo Chrome do celular.', 4000);
   }
+}
+
+async function enviarTextoWhatsApp() {
+  const texto = $('textoRelatorio').textContent;
+  if (navigator.share) {
+    try { await navigator.share({ text: texto }); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  window.location.href = 'https://wa.me/?text=' + encodeURIComponent(texto);
 }
 
 // ===== Relatórios salvos =====
